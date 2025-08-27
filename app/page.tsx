@@ -1,9 +1,9 @@
+import React from 'react'
 
-
-export default function Home() {
+const Dashboard = () => {
   return (
-   <div>
-    My new project
-   </div>
-  );
+    <div>Dashboard</div>
+  )
 }
+
+export default Dashboard
