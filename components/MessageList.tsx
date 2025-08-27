@@ -12,7 +12,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-gray-500">
         <div className="text-center p-6">
-          <h3 className="text-xl font-semibold mb-2">Welcome to Gemini Chat</h3>
+          <h3 className="text-xl font-semibold mb-2">Welcome to AI Chat bot</h3>
           <p className="text-gray-600">Start a conversation by typing a message below</p>
         </div>
       </div>
