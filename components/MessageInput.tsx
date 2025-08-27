@@ -40,7 +40,7 @@ export default function MessageInput({ onSendMessage, disabled }: MessageInputPr
       <button
         onClick={handleSend}
         disabled={disabled || !message.trim()}
-        className="bg-blue-600 text-white p-3 rounded-lg disabled:bg-blue-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+        className="bg-blue-600 text-white p-3 rounded-lg disabled:bg-blue-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors cursor-pointer"
       >
         <SendIcon />
       </button>
