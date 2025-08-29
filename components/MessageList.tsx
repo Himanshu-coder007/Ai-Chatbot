@@ -11,9 +11,9 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
   if (messages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-gray-500">
-        <div className="text-center p-6">
-          <h3 className="text-xl font-semibold mb-2">Welcome to AI Chat bot</h3>
-          <p className="text-gray-600">Start a conversation by typing a message below</p>
+        <div className="text-center p-8">
+          <h3 className="text-2xl font-semibold mb-4">Welcome to AI Chat bot</h3>
+          <p className="text-gray-600 text-lg">Start a conversation by typing a message below</p>
         </div>
       </div>
     );
@@ -26,7 +26,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
       ))}
       {isLoading && (
         <div className="flex justify-start">
-          <div className="bg-gray-100 rounded-2xl px-4 py-3">
+          <div className="bg-gray-100 rounded-2xl px-5 py-4">
             <LoadingDots />
           </div>
         </div>
