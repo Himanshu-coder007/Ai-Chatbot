@@ -20,13 +20,13 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {messages.map((message) => (
         <MessageBubble key={message.id} message={message} />
       ))}
       {isLoading && (
         <div className="flex justify-start">
-          <div className="bg-gray-100 rounded-2xl px-4 py-3 max-w-xs">
+          <div className="bg-gray-100 rounded-2xl px-4 py-3">
             <LoadingDots />
           </div>
         </div>
