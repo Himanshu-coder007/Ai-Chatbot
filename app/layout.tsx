@@ -14,8 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gemini Chatbot",
+  title: "HelpDeskAI",
   description: "An AI-powered chatbot experience with Gemini",
+  icons: {
+    icon: "/logo.png", // This will use your logo.png from the public folder
+  },
 };
 
 export default function RootLayout({
