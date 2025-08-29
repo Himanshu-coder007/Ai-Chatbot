@@ -1,4 +1,3 @@
-// app/api/chat/route.ts (this is all you need)
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
@@ -25,13 +24,23 @@ export async function POST(req: NextRequest) {
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: message,
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: message }],
+        },
+      ],
       config: {
         thinkingConfig: { thinkingBudget: 0 },
       },
     });
 
-    return NextResponse.json({ response: response.text });
+    // ✅ Safely extract text
+    const text =
+      response.candidates?.[0]?.content?.parts?.[0]?.text ??
+      'No response generated';
+
+    return NextResponse.json({ response: text });
   } catch (error) {
     console.error('Error:', error);
     return NextResponse.json(
