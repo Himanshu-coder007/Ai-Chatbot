@@ -5,9 +5,27 @@ import { useState, KeyboardEvent, useRef, useEffect } from 'react';
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
   disabled: boolean;
+  selectedPersona: string;
+  onPersonaChange: (persona: string) => void;
 }
 
-export default function MessageInput({ onSendMessage, disabled }: MessageInputProps) {
+const personaEmojis: Record<string, string> = {
+  'default': '🤖',
+  'career-coach': '💼',
+  'event-planner': '🎉',
+  'interviewer': '📝',
+  'health-expert': '❤️',
+};
+
+const personaNames: Record<string, string> = {
+  'default': 'General Assistant',
+  'career-coach': 'Career Coach',
+  'event-planner': 'Event Planner',
+  'interviewer': 'Interviewer',
+  'health-expert': 'Health Expert',
+};
+
+export default function MessageInput({ onSendMessage, disabled, selectedPersona, onPersonaChange }: MessageInputProps) {
   const [message, setMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
@@ -122,9 +140,25 @@ export default function MessageInput({ onSendMessage, disabled }: MessageInputPr
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full">
       <div className="flex items-end gap-2">
         <div className="flex-1 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent text-black">
+          <div className="flex items-center px-3 py-2 border-b border-gray-200">
+            <span className="text-sm font-medium text-gray-700 mr-2">Mode:</span>
+            <span className="text-lg mr-1">{personaEmojis[selectedPersona]}</span>
+            <select 
+              value={selectedPersona} 
+              onChange={(e) => onPersonaChange(e.target.value)}
+              className="text-sm bg-transparent border-none focus:outline-none focus:ring-0 py-0"
+              disabled={disabled}
+            >
+              <option value="default">General Assistant</option>
+              <option value="career-coach">Career Coach</option>
+              <option value="event-planner">Event Planner</option>
+              <option value="interviewer">Interviewer</option>
+              <option value="health-expert">Health Expert</option>
+            </select>
+          </div>
           <textarea
             value={message + (interimTranscriptRef.current ? ' ' + interimTranscriptRef.current : '')}
             onChange={(e) => setMessage(e.target.value)}
