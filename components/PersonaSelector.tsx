@@ -65,7 +65,7 @@ export default function PersonaSelector({ selectedPersona, onPersonaChange }: Pe
           >
             <div className="flex items-center mb-1">
               <span className="text-xl mr-2">{persona.emoji}</span>
-              <span className="font-medium text-sm">{persona.name}</span>
+              <span className="font-medium text-sm text-black">{persona.name}</span>
             </div>
             <p className="text-xs text-gray-600">{persona.description}</p>
           </button>
