@@ -1,3 +1,4 @@
+// components/MessageBubble.tsx
 'use client';
 
 import { Message } from '@/types/chat';
