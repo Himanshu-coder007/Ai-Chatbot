@@ -3,6 +3,11 @@ export interface Message {
   content: string;
   role: 'user' | 'assistant' | 'system';
   timestamp: Date;
+  file?: {
+    name: string;
+    type: string;
+    size: number;
+  };
   persona?: string;
   isError?: boolean;
 }

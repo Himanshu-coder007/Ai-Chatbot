@@ -1,4 +1,3 @@
-// app/api/chat/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
@@ -23,24 +22,46 @@ const personaPrompts: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, persona } = await req.json();
+    const formData = await req.formData();
 
-    if (!message) {
+    const message = formData.get('message') as string | null;
+    const persona = formData.get('persona') as string | null;
+    const file = formData.get('file') as File | null;
+
+    if (!message && !file) {
       return NextResponse.json(
-        { error: 'No message provided' },
+        { error: 'No message or file provided' },
         { status: 400 }
       );
     }
 
-    const selectedPersona = persona && personaPrompts[persona] ? persona : 'default';
+    const selectedPersona =
+      persona && personaPrompts[persona] ? persona : 'default';
     const systemPrompt = personaPrompts[selectedPersona];
+
+    // Build prompt parts
+    const parts: any[] = [{ text: `${systemPrompt}\n\nUser: ${message ?? ''}` }];
+
+    if (file) {
+      // Convert file into ArrayBuffer → Base64
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const base64 = buffer.toString('base64');
+
+      parts.push({
+        inlineData: {
+          mimeType: file.type || 'application/octet-stream',
+          data: base64,
+        },
+      });
+    }
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: [
         {
           role: 'user',
-          parts: [{ text: `${systemPrompt}\n\nUser: ${message}` }],
+          parts,
         },
       ],
       config: {

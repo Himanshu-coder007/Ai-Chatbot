@@ -19,27 +19,34 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (content: string, persona: string = selectedPersona) => {
+  const handleSendMessage = async (content: string, file: File | null = null, persona: string = selectedPersona) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       content,
       role: 'user',
       timestamp: new Date(),
+      file: file ? {
+        name: file.name,
+        type: file.type,
+        size: file.size
+      } : undefined
     };
 
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
     try {
+      const formData = new FormData();
+      formData.append('message', content);
+      formData.append('persona', persona);
+      
+      if (file) {
+        formData.append('file', file);
+      }
+
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          message: content,
-          persona: persona 
-        }),
+        body: formData,
       });
 
       const data = await response.json();
@@ -104,7 +111,7 @@ export default function ChatInterface() {
       </div>
       <div className="p-6 border-t border-gray-200">
         <MessageInput 
-          onSendMessage={(message) => handleSendMessage(message, selectedPersona)} 
+          onSendMessage={handleSendMessage} 
           disabled={isLoading} 
           selectedPersona={selectedPersona}
           onPersonaChange={handlePersonaChange}

@@ -1,10 +1,9 @@
-// components/MessageInput.tsx
 'use client';
 
-import { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import { useState, KeyboardEvent, useRef, useEffect, ChangeEvent } from 'react';
 
 interface MessageInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, file: File | null, persona: string) => void;
   disabled: boolean;
   selectedPersona: string;
   onPersonaChange: (persona: string) => void;
@@ -26,12 +25,17 @@ const personaNames: Record<string, string> = {
   'health-expert': 'Health Expert',
 };
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 export default function MessageInput({ onSendMessage, disabled, selectedPersona, onPersonaChange }: MessageInputProps) {
   const [message, setMessage] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
   const [recognitionError, setRecognitionError] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const interimTranscriptRef = useRef('');
 
   useEffect(() => {
@@ -96,10 +100,12 @@ export default function MessageInput({ onSendMessage, disabled, selectedPersona,
   }, []);
 
   const handleSend = () => {
-    if (message.trim() && !disabled) {
-      onSendMessage(message.trim());
+    if ((message.trim() || selectedFile) && !disabled) {
+      onSendMessage(message.trim(), selectedFile, selectedPersona);
       setMessage('');
+      setSelectedFile(null);
       setRecognitionError(null);
+      setFileError(null);
     }
   };
 
@@ -140,8 +146,76 @@ export default function MessageInput({ onSendMessage, disabled, selectedPersona,
     }
   };
 
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      setFileError(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+      return;
+    }
+
+    // Validate file type (optional - you can customize this)
+    const validTypes = ['image/', 'application/pdf', 'text/'];
+    if (!validTypes.some(type => file.type.startsWith(type))) {
+      setFileError('Please select an image, PDF, or text file');
+      return;
+    }
+
+    setSelectedFile(file);
+    setFileError(null);
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setFileError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const getFileIcon = (type: string) => {
+    if (type.startsWith('image/')) return '🖼️';
+    if (type === 'application/pdf') return '📄';
+    if (type.startsWith('text/')) return '📝';
+    return '📎';
+  };
+
   return (
     <div className="w-full">
+      {/* File selection area */}
+      {selectedFile && (
+        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+          <div className="flex items-center">
+            <span className="text-lg mr-2">{getFileIcon(selectedFile.type)}</span>
+            <div>
+              <p className="text-sm font-medium text-blue-800">{selectedFile.name}</p>
+              <p className="text-xs text-blue-600">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+            </div>
+          </div>
+          <button
+            onClick={removeFile}
+            className="text-red-500 hover:text-red-700 ml-2"
+            type="button"
+            title="Remove file"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {fileError && (
+        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {fileError}
+        </div>
+      )}
+
       <div className="flex items-end gap-2">
         <div className="flex-1 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent text-black">
           <div className="flex items-center px-3 py-2 border-b border-gray-200">
@@ -159,12 +233,27 @@ export default function MessageInput({ onSendMessage, disabled, selectedPersona,
               <option value="interviewer">Interviewer</option>
               <option value="health-expert">Health Expert</option>
             </select>
+            
+            {/* File upload button */}
+            <label className="ml-auto cursor-pointer text-gray-600 hover:text-gray-800">
+              <input
+                ref={fileInputRef}
+                type="file"
+                onChange={handleFileSelect}
+                className="hidden"
+                accept="image/*,.pdf,.txt,.doc,.docx"
+                disabled={disabled}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+            </label>
           </div>
           <textarea
             value={message + (interimTranscriptRef.current ? ' ' + interimTranscriptRef.current : '')}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type your message or use voice input..."
+            placeholder="Type your message, attach a file, or use voice input..."
             className="w-full px-3 py-2 resize-none border-none focus:outline-none"
             rows={1}
             disabled={disabled}
@@ -189,7 +278,7 @@ export default function MessageInput({ onSendMessage, disabled, selectedPersona,
         
         <button
           onClick={handleSend}
-          disabled={disabled || !message.trim()}
+          disabled={disabled || (!message.trim() && !selectedFile)}
           className="bg-blue-600 text-white p-3 rounded-lg disabled:bg-blue-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors cursor-pointer"
           type="button"
         >
