@@ -37,7 +37,6 @@ const Navbar = () => {
               Chat
             </Link>
             
-            
           </div>
 
           {/* Mobile menu button */}
