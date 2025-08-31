@@ -1,10 +1,8 @@
-// components/ChatInterface.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
-import PersonaSelector from './PersonaSelector';
 import { Message } from '@/types/chat';
 
 export default function ChatInterface() {
@@ -100,12 +98,6 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full w-full max-w-6xl mx-auto bg-white rounded-lg shadow-lg">
-      <div className="p-4 border-b border-gray-200">
-        <PersonaSelector 
-          selectedPersona={selectedPersona} 
-          onPersonaChange={handlePersonaChange} 
-        />
-      </div>
       <div className="flex-1 overflow-y-auto p-6">
         <MessageList messages={messages} isLoading={isLoading} />
         <div ref={messagesEndRef} />

@@ -36,9 +36,7 @@ const Navbar = () => {
             <Link href="/chat" className="text-white hover:bg-blue-500 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
               Chat
             </Link>
-            <Link href="/history" className="text-white hover:bg-blue-500 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-              History
-            </Link>
+            
             
           </div>
 
@@ -98,13 +96,7 @@ const Navbar = () => {
           >
             Chat
           </Link>
-          <Link 
-            href="/history" 
-            className="text-white hover:bg-blue-600 block px-3 py-2 rounded-md text-base font-medium"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            History
-          </Link>
+         
          
         </div>
       </div>
