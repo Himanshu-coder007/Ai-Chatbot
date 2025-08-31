@@ -90,7 +90,8 @@ body {
 }
 
 .markdown-content pre {
-  background-color: #f9fafb;
+  background-color: #1f2937;
+  color: #f9fafb;
   padding: 1em;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -100,6 +101,7 @@ body {
 .markdown-content pre code {
   background-color: transparent;
   padding: 0;
+  color: inherit;
 }
 
 .markdown-content table {
@@ -133,4 +135,44 @@ body {
   border: none;
   border-top: 1px solid #e5e7eb;
   margin: 2em 0;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .markdown-content h1,
+  .markdown-content h2 {
+    border-bottom: 1px solid #4b5563;
+  }
+  
+  .markdown-content code {
+    background-color: #374151;
+    color: #e5e7eb;
+  }
+  
+  .markdown-content pre {
+    background-color: #111827;
+    color: #f3f4f6;
+  }
+  
+  .markdown-content table th,
+  .markdown-content table td {
+    border: 1px solid #4b5563;
+  }
+  
+  .markdown-content table th {
+    background-color: #374151;
+  }
+  
+  .markdown-content table tr:nth-child(even) {
+    background-color: #374151;
+  }
+  
+  .markdown-content blockquote {
+    border-left: 4px solid #4b5563;
+    color: #d1d5db;
+  }
+  
+  .markdown-content hr {
+    border-top: 1px solid #4b5563;
+  }
 }
