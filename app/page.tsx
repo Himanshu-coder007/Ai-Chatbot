@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   MessageSquare,
   Users,
@@ -15,6 +16,7 @@ import {
 
 const FeaturesShowcase = () => {
   const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
+   const router = useRouter()
 
   const features = [
     {
@@ -100,7 +102,9 @@ const FeaturesShowcase = () => {
             practice - we&apos;ve got you covered.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
+            <button 
+            onClick={() => router.push("/chat")} 
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
               Start
               <ArrowRight className="ml-2 h-5 w-5" />
             </button>
