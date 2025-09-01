@@ -17,15 +17,49 @@ const personaEmojis: Record<string, string> = {
   'health-expert': '❤️',
 };
 
-const personaNames: Record<string, string> = {
-  'default': 'General Assistant',
-  'career-coach': 'Career Coach',
-  'event-planner': 'Event Planner',
-  'interviewer': 'Interviewer',
-  'health-expert': 'Health Expert',
-};
-
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onnomatch: (() => void) | null;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
 
 export default function MessageInput({ onSendMessage, disabled, selectedPersona, onPersonaChange }: MessageInputProps) {
   const [message, setMessage] = useState('');
@@ -34,7 +68,7 @@ export default function MessageInput({ onSendMessage, disabled, selectedPersona,
   const [speechSupported, setSpeechSupported] = useState(true);
   const [recognitionError, setRecognitionError] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const interimTranscriptRef = useRef('');
 
@@ -47,13 +81,13 @@ export default function MessageInput({ onSendMessage, disabled, selectedPersona,
 
     try {
       // Initialize speech recognition
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = 'en-US';
 
-      recognitionRef.current.onresult = (event: any) => {
+      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
         interimTranscriptRef.current = '';
         let finalTranscript = '';
 
@@ -77,7 +111,7 @@ export default function MessageInput({ onSendMessage, disabled, selectedPersona,
         interimTranscriptRef.current = '';
       };
 
-      recognitionRef.current.onerror = (event: any) => {
+      recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error', event.error);
         setRecognitionError(`Error: ${event.error}`);
         setIsListening(false);

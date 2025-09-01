@@ -97,7 +97,7 @@ const FeaturesShowcase = () => {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
             One powerful chatbot with specialized personas for every need. From
             career coaching to health advice, event planning to interview
-            practice - we've got you covered.
+            practice - we&apos;ve got you covered.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">

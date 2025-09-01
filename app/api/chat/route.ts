@@ -20,6 +20,11 @@ const personaPrompts: Record<string, string> = {
   'default': `You are a helpful, friendly assistant. Provide clear, concise, and accurate responses to the user's queries.`
 };
 
+// Types for prompt parts
+type TextPart = { text: string };
+type FilePart = { inlineData: { mimeType: string; data: string } };
+type Part = TextPart | FilePart;
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -40,7 +45,7 @@ export async function POST(req: NextRequest) {
     const systemPrompt = personaPrompts[selectedPersona];
 
     // Build prompt parts
-    const parts: any[] = [{ text: `${systemPrompt}\n\nUser: ${message ?? ''}` }];
+    const parts: Part[] = [{ text: `${systemPrompt}\n\nUser: ${message ?? ''}` }];
 
     if (file) {
       // Convert file into ArrayBuffer → Base64
