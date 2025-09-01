@@ -23,7 +23,7 @@ const Navbar = () => {
                     className="object-contain"
                   />
                 </div>
-                <span className="text-white text-xl font-bold">AI Chatbot</span>
+                <span className="text-white text-xl font-bold">HelpDesk AI</span>
               </Link>
             </div>
           </div>
