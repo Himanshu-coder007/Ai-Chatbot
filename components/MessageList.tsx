@@ -1,6 +1,9 @@
 'use client';
 
 import { Message } from '@/types/chat';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface MessageListProps {
   messages: Message[];
@@ -48,7 +51,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             }`}
           >
             {message.file && (
-              <div className="mb-2 p-2 bg-white bg-opacity-20 rounded">
+              <div className="mb-2 p-2 bg-white text-black bg-opacity-20 rounded">
                 <div className="flex items-center">
                   <span className="text-lg mr-2">{getFileIcon(message.file.type)}</span>
                   <div>
@@ -59,7 +62,38 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
               </div>
             )}
             
-            <p className="whitespace-pre-wrap">{message.content}</p>
+            {message.role === 'assistant' ? (
+              <div className="markdown-content">
+                <ReactMarkdown
+                  components={{
+                    code({ node, inline, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      const language = match ? match[1] : '';
+                      
+                      return !inline && language ? (
+                        <SyntaxHighlighter
+                          style={vscDarkPlus}
+                          language={language}
+                          PreTag="div"
+                          className="rounded-md"
+                          {...props}
+                        >
+                          {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <p className="whitespace-pre-wrap">{message.content}</p>
+            )}
             
             {message.persona && (
               <div className="mt-1 text-xs opacity-70">
