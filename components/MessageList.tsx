@@ -4,6 +4,7 @@ import { Message } from '@/types/chat';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import type { SyntaxHighlighterProps } from 'react-syntax-highlighter';
 
 interface MessageListProps {
   messages: Message[];
@@ -66,17 +67,18 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
               <div className="markdown-content">
                 <ReactMarkdown
                   components={{
-                    code({ node, inline, className, children, ...props }) {
+                    code({ node, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || '');
                       const language = match ? match[1] : '';
+                      const isInline = !className?.includes('language-');
                       
-                      return !inline && language ? (
+                      return !isInline && language ? (
                         <SyntaxHighlighter
                           style={vscDarkPlus}
                           language={language}
                           PreTag="div"
                           className="rounded-md"
-                          {...props}
+                          {...props as SyntaxHighlighterProps}
                         >
                           {String(children).replace(/\n$/, '')}
                         </SyntaxHighlighter>
